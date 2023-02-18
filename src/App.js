@@ -1,5 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
+import { Context } from "./UserContext";
+import Chat from "./components/Chat"
 
 function App() {
   return (
