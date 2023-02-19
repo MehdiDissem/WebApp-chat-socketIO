@@ -18,7 +18,7 @@ module.exports.login = async (req, res, next) => {
 
 module.exports.register = async (req, res, next) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, isAvatarImageSet,avatarImage } = req.body;
     const usernameCheck = await User.findOne({ username });
     if (usernameCheck)
       return res.json({ msg: "Username already used", status: false });
@@ -30,6 +30,8 @@ module.exports.register = async (req, res, next) => {
       email,
       username,
       password: hashedPassword,
+      isAvatarImageSet:true,
+      avatarImage
     });
 
     return res.json({ status: true, user });
@@ -96,3 +98,6 @@ module.exports.logOut = (req, res, next) => {
     next(ex);
   }
 };
+module.exports.all=(req,res)=>{
+  User.find({}).then(result=>res.json(result)).catch(err=>console.log(err))
+}

@@ -11,7 +11,7 @@ const server = http.createServer(app);
 app.use(cors())
 app.use(express.json())
 mongoose.set("strictQuery",false)
-mongoose.connect("mongodb://localhost:27017/webApp-chat", {
+mongoose.connect("mongodb://127.0.0.1:27017/webApp-chat", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   }).then(()=> console.log("connected (mongo)")).catch(err => console.log(err.message))
