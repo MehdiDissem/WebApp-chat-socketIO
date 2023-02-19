@@ -19,6 +19,7 @@ mongoose.connect("mongodb://localhost:27017/webApp-chat", {
 app.use("/api/messages", messageRoutes);
 app.use("/api/users", usersRoutes);
 
+
 server.listen(3000, () => console.log("server started on 3000"));
 
 const io = socket(server, {
