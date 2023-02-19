@@ -27,8 +27,8 @@ useEffect(() => {
     .catch((err) => console.log(err));
 }, []);
 
-const filtered = Data.filter(employee => {
-  return employee._id === '63f2686ba8206e348c59d72f';
+const filtered = Data.filter(e => {
+  return e._id === '63f2686ba8206e348c59d72f';
 });
 console.log(messages, "messages") 
 console.log(User, "user")
