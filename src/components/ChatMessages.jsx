@@ -1,9 +1,6 @@
-import React from "react";
+import React,{useState, useEffect} from "react";
 import "./Chat.css"
 import {
-    MDBContainer,
-    MDBRow,
-    MDBCol,
     MDBCard,
     MDBCardBody,
     MDBIcon,
@@ -12,9 +9,31 @@ import {
     MDBTextArea,
     MDBCardHeader,
   } from "mdb-react-ui-kit";
+  import axios from "axios"
 
 
-export default function ChatMessages (){
+export default function ChatMessages ({User, Data}){
+const [current, getCurrent] = useState("")
+const [instance, getInstance]=useState([])
+const [messages, setMessages]= useState([])
+useEffect(() => {
+  axios
+
+    .post("http://127.0.0.1:3000/api/messages/getmsg/", {
+      from: User,
+      to: "63f2686ba8206e348c59d72f",
+    })
+    .then((res) => setMessages(res.data))
+    .catch((err) => console.log(err));
+}, []);
+
+const filtered = Data.filter(employee => {
+  return employee._id === '63f2686ba8206e348c59d72f';
+});
+console.log(messages, "messages") 
+console.log(User, "user")
+console.log(Data, "data")
+console.log(filtered, "filtered")
     return (
         <>
         <MDBTypography listUnStyled className="text-white">

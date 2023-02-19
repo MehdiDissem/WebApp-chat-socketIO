@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext,useState } from "react";
 import "./Chat.css"
 import {
   MDBContainer,
@@ -17,6 +17,8 @@ import ChatMessages from "./ChatMessages";
 export default function Chat({data}) {
 
   const {user,users}=useContext(Context)
+  const [clickedUser, getClickedUser]=useState("")
+  console.log(clickedUser)
   console.log(data, "from chat")
 
   return (
@@ -42,6 +44,9 @@ export default function Chat({data}) {
                   }}
                 >
                   <a
+                  onClick={()=>{
+                    getClickedUser(e._id)
+                  }}
                     href="#!"
                     className="d-flex justify-content-between link-light"
                   >
@@ -74,7 +79,7 @@ export default function Chat({data}) {
         </MDBCol>
 {/* End of the list */}
         <MDBCol md="6" lg="7" xl="8">
-          <ChatMessages/>
+          <ChatMessages User={clickedUser} Data={data}/>
         </MDBCol>
       </MDBRow>
     </MDBContainer>
