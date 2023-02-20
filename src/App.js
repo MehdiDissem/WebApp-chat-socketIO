@@ -4,6 +4,9 @@ import { Context } from "./Context";
 import Chat from "./components/Chat"
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import Register from './components/Register';
+
+import {BrowserRouter,Routes,Route} from "react-router-dom";
 
 function App() {
   const [users, setUsers]=useState([])
@@ -16,7 +19,12 @@ console.log(users, "from app")
   return (
     <Context.Provider 
     value ={{users}}>
-      <Chat data={users}/>
+      <BrowserRouter>
+      <Routes>
+        <Route exact path="/" element={<Register/>}/>
+        <Route exact path="/chat" element= {<Chat data={users}/>}/>
+      </Routes>
+      </BrowserRouter>
     </Context.Provider>
   );
 }
