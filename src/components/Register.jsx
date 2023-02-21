@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState} from 'react';
 import {useNavigate} from "react-router-dom"
 import {
   MDBBtn,
@@ -11,57 +11,55 @@ import {
   MDBRadio
 }
 from 'mdb-react-ui-kit';
+import axios from 'axios';
 import "./Register.css"
 
 function Register() {
     const navigate = useNavigate()
+    const [image, setImage]= useState('')
+    const [username, setUsername]=useState('')
+    const [email,setEmail]=useState('')
+    const [password, setPassword]=useState('')
+
+    const handleSubmit=()=>{
+        axios.post("http://127.0.0.1:3000/api/users/register/",{
+            username:username,
+            email:email,
+            password:password,
+            avatarImage:image
+        }).then((res)=> console.log(res)).catch(err=> console.log(err))
+    }
+
   return (
-    <MDBContainer fluid>
+    <MDBContainer fluid md="6">
 
       <MDBRow className='justify-content-center align-items-center m-5'>
 
         <MDBCard>
           <MDBCardBody className='px-4'>
 
-            <h3 className="fw-bold mb-4 pb-2 pb-md-0 mb-md-5">Registration Form</h3>
+            <h3 className="fw-bold mb-4 pb-2 pb-md-0 mb-md-5">SignUp/Login</h3>
 
             <MDBRow>
-
-              <MDBCol md='6'>
-                <MDBInput wrapperClass='mb-4' label='First Name' size='lg' id='form1' type='text'/>
+              <MDBCol >
+              <div class="d-flex flex-column align-items-center text-center p-3 py-5">
+              <img class="rounded-circle mt-5" width="150px" src={image}/>
+              </div>
+                <MDBInput wrapperClass='mb-4' label='Username' size='lg' id='form2' type='text' onChange={(event)=> setUsername(event.target.value)}/>
               </MDBCol>
-
-              <MDBCol md='6'>
-                <MDBInput wrapperClass='mb-4' label='Last Name' size='lg' id='form2' type='text'/>
-              </MDBCol>
-
             </MDBRow>
 
-            <MDBRow>
-
-              <MDBCol md='6'>
-                <MDBInput wrapperClass='mb-4' label='Birthday' size='lg' id='form3' type='text'/>
-              </MDBCol>
-
-              <MDBCol md='6' className='mb-4'>
-                <h6 className="fw-bold">Gender: </h6>
-                <MDBRadio name='inlineRadio' id='inlineRadio1' value='option1' label='Female' inline />
-                <MDBRadio name='inlineRadio' id='inlineRadio2' value='option2' label='Male' inline />
-                <MDBRadio name='inlineRadio' id='inlineRadio3' value='option3' label='Other' inline />
-              </MDBCol>
-
-            </MDBRow>
 
             <MDBRow>
 
-              <MDBCol md='6'>
-                <MDBInput wrapperClass='mb-4' label='Email' size='lg' id='form4' type='email'/>
+              <MDBCol>
+                <MDBInput wrapperClass='mb-4' label='Email' size='lg' id='form4' type='email' onChange={(event)=>setEmail(event.target.value)}/>
               </MDBCol>
 
-              <MDBCol md='6'>
-                <MDBInput wrapperClass='mb-4' label='Phone Number' size='lg' id='form5' type='rel'/>
+              <MDBCol>
+                <MDBInput wrapperClass='mb-4' label='password' size='lg' id='form4' type='password' onChange={(event)=> setPassword(event.target.value)}/>
               </MDBCol>
-
+              <MDBInput wrapperClass='mb-4' label='Image link' size='lg' id='form2' type='text' onChange={(event)=> setImage(event.target.value)}/>
             </MDBRow>
 
             <MDBBtn className='mb-4' size='lg' onClick={()=> navigate("/chat")}>Submit</MDBBtn>
