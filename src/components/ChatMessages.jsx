@@ -12,7 +12,7 @@ import {
   import axios from "axios"
 
 
-export default function ChatMessages ({User, Data}){
+export default function ChatMessages ({User, Data,currentUser}){
 const [current, getCurrent] = useState("")
 const [instance, getInstance]=useState([])
 const [messages, setMessages]= useState([])
@@ -21,7 +21,7 @@ useEffect(() => {
 
     .post("http://127.0.0.1:3000/api/messages/getmsg/", {
       from: User,
-      to: "63f2686ba8206e348c59d72f",
+      to: currentUser.user._id,
     })
     .then((res) => setMessages(res.data))
     .catch((err) => console.log(err));
@@ -31,9 +31,10 @@ const filtered = Data.filter(e => {
   return e._id === '63f361c6d640fa40fb91a964';
 });
 console.log(messages, "messages") 
-console.log(User, "user")
-console.log(Data, "data")
-console.log(filtered, "filtered")
+// console.log(User, "user")
+// console.log(Data, "data")
+// console.log(filtered, "filtered")
+console.log(currentUser.user._id, "the user went to chat messages ")
     return (
         <>
         <MDBTypography listUnStyled className="text-white">

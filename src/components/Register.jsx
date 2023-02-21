@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React,{useState, useContext} from 'react';
 import {useNavigate} from "react-router-dom"
 import {
   MDBBtn,
@@ -13,6 +13,7 @@ import {
 from 'mdb-react-ui-kit';
 import axios from 'axios';
 import "./Register.css"
+import {Context} from "../Context"
 
 function Register() {
     const navigate = useNavigate()
@@ -21,13 +22,18 @@ function Register() {
     const [email,setEmail]=useState('')
     const [password, setPassword]=useState('')
 
+    const {setUser}=useContext(Context)
+
     const handleSubmit=()=>{
         axios.post("http://127.0.0.1:3000/api/users/register/",{
             username:username,
             email:email,
             password:password,
             avatarImage:image
-        }).then((res)=> console.log(res)).catch(err=> console.log(err))
+        }).then((res)=> {
+          document.cookie = username;
+          setUser(res.data)
+          navigate("/chat")}).catch(err=> alert(err))
     }
 
   return (
@@ -62,7 +68,7 @@ function Register() {
               <MDBInput wrapperClass='mb-4' label='Image link' size='lg' id='form2' type='text' onChange={(event)=> setImage(event.target.value)}/>
             </MDBRow>
 
-            <MDBBtn className='mb-4' size='lg' onClick={()=> navigate("/chat")}>Submit</MDBBtn>
+            <MDBBtn className='mb-4' size='lg' onClick={handleSubmit}>Submit</MDBBtn>
 
           </MDBCardBody>
         </MDBCard>

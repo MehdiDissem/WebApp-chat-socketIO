@@ -14,7 +14,7 @@ import {
 } from "mdb-react-ui-kit";
 import { Context } from "../Context";
 import ChatMessages from "./ChatMessages";
-export default function Chat({data}) {
+export default function Chat({data,currentUser}) {
 
   const {user,users}=useContext(Context)
   const [clickedUser, getClickedUser]=useState("")
@@ -79,7 +79,7 @@ export default function Chat({data}) {
         </MDBCol>
 {/* End of the list */}
         <MDBCol md="6" lg="7" xl="8">
-          <ChatMessages User={clickedUser} Data={data}/>
+          <ChatMessages User={clickedUser} Data={data} currentUser={currentUser}/>
         </MDBCol>
       </MDBRow>
     </MDBContainer>

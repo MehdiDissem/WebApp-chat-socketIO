@@ -9,20 +9,20 @@ import Register from './components/Register';
 import {BrowserRouter,Routes,Route} from "react-router-dom";
 
 function App() {
-  const [users, setUsers]=useState([])
+  const [users, setUsers]=useState(null)
+  const [user,setUser]=useState([])
 
   useEffect(()=>{
     axios.get("http://127.0.0.1:3000/api/users/all").then(res=> setUsers(res.data)).catch(err=>console.log(err))
   },[])
-console.log(users, "from app")
 
   return (
     <Context.Provider 
-    value ={{users}}>
+    value ={{users,setUser}}>
       <BrowserRouter>
       <Routes>
         <Route exact path="/" element={<Register/>}/>
-        <Route exact path="/chat" element= {<Chat data={users}/>}/>
+        <Route exact path="/chat" element= {<Chat data={users} currentUser={user}/>}/>
       </Routes>
       </BrowserRouter>
     </Context.Provider>
