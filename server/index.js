@@ -1,52 +1,89 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const app = express();
-const socket = require("socket.io");
+const http = require("http");
+const socketIo = require("socket.io");
 const messageRoutes = require("./routes/messages");
 const usersRoutes = require("./routes/users");
-const http = require("http");
-const server = http.createServer(app);
+const httpProxy = require('http-proxy');
 
-app.use(cors())
-app.use(express.json())
-mongoose.set("strictQuery",false)
-mongoose.connect("mongodb://127.0.0.1:27017/webApp-chat", {
+const app = express();
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+    origin: "http://127.0.0.1:3000",
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
+
+app.use(cors());
+app.use(express.json());
+const proxy = httpProxy.createProxyServer();
+
+mongoose.set("strictQuery", false);
+mongoose
+  .connect("mongodb://127.0.0.1:27017/webApp-chat", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-  }).then(()=> console.log("connected (mongo)")).catch(err => console.log(err.message))
+  })
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.log(err.message));
 
 app.use("/api/messages", messageRoutes);
 app.use("/api/users", usersRoutes);
 
+app.get('/', (req, res) => {
+  res.set('Access-Control-Allow-Origin', 'http://localhost:3001');
+  res.send('Hello World!');
+});
 
-server.listen(3000, () => console.log("server started on 3000"));
+// Socket.IO implementation
+io.on("connection", (socket) => {
+  console.log(`New user connected: ${socket.id}`);
 
-const io = socket(server, {
-    cors: {
-      origin: "http://127.0.0.1:3000",
-      methods: ["GET", "POST"],
-      credentials: true,
-    },
+  // Add user to online users map
+  global.onlineUsers.set(socket.id, { id: socket.id });
+
+  // Send a welcome message to the new user
+  socket.emit("messageResponse", {
+    message: `Welcome to the chat room, ${socket.id}!`,
+    sender: "Server",
+    timestamp: new Date(),
   });
-  
-  global.onlineUsers = new Map();
-  
-  io.on("connection", (socket) => {
-    console.log(`⚡: ${socket.id} user just connected!`);
-  
-    //sends the message to all the users on the server
-    socket.on("message", (data) => {
-      io.emit("messageResponse", data);
-    });
-  
-    socket.on("disconnect", () => {
-      console.log("🔥: A user disconnected");
+
+  // Broadcast to all users that a new user has joined
+  socket.broadcast.emit("messageResponse", {
+    message: `${socket.id} has joined the chat`,
+    sender: "Server",
+    timestamp: new Date(),
+  });
+
+  // Send chat message to all users
+  socket.on("message", (data) => {
+    io.emit("messageResponse", data);
+  });
+
+  // Remove user from online users map when they disconnect
+  socket.on("disconnect", () => {
+    console.log(`User disconnected: ${socket.id}`);
+    global.onlineUsers.delete(socket.id);
+
+    // Broadcast to all users that the user has left
+    socket.broadcast.emit("messageResponse", {
+      message: `${socket.id} has left the chat`,
+      sender: "Server",
+      timestamp: new Date(),
     });
   });
-  
-  // socket.on("disconnect", () => {
-  //   socket.disconnect();
-  //   console.log("🔥: A user disconnected");
-  // });
-  
+});
+
+// Use the cors middleware for Socket.IO
+// io.origins((origin, callback) => {
+//   if (origin !== "http://127.0.0.1:3001") {
+//     return callback("origin not allowed", false);
+//   }
+//   callback(null, true);
+// });
+
+server.listen(3000, () => console.log("Server started on port 3000"));
