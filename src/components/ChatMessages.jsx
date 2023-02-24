@@ -35,6 +35,7 @@ export default function ChatMessages({ User, Data, currentUser }) {
       .then((res) => {
         setMessages(res.data);
         scrollToBottom();
+        console.log(socket)
       })
       .catch((err) => console.log(err));
 
@@ -51,7 +52,7 @@ export default function ChatMessages({ User, Data, currentUser }) {
     return () => {
       socket.off("receive_message");
     };
-  }, []);
+  }, [User,currentUser]);
 
   const filtered = Data.filter((e) => {
     return e._id === currentUser.user._id;
@@ -60,7 +61,7 @@ export default function ChatMessages({ User, Data, currentUser }) {
   console.log(messages, "messages");
   console.log(currentUser.user._id, "the user went to chat messages ");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     const message = {
       from: User,
@@ -70,12 +71,30 @@ export default function ChatMessages({ User, Data, currentUser }) {
     socket.emit("send_message", message);
     setCurrent("");
     setMessageSent(true);
+    await axios.post("http://127.0.0.1:3001/api/messages/addmsg/",{
+      from : User,
+      to:currentUser,
+      message:text
+    }).then(res=> console.log(res)).catch(err => console.log(err))
   };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  useEffect(() => {
+    const messageResponse = (data) => {
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { fromSelf: false, message: data.message },
+      ]);
+    };
+    socket.on("messageResponse", messageResponse);
+    return () => {
+      socket.off("messageResponse", messageResponse);
+    };
+  }, []);
+  
   return (
     <MDBTypography listUnStyled className="text-white">
   {messages && messages.map((message, index) => {

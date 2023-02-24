@@ -80,10 +80,10 @@ io.on("connection", (socket) => {
 });
 
 io.use((socket, next) => {
-  socket.handshake.headers.origin = "http://127.0.0.1:3000";
+  socket.handshake.headers.origin = "http://localhost:3000";
   // update the corsOptions to include the origin
   const corsOptions = {
-    origin: "http://127.0.0.1:3000",
+    origin: "http://localhost:3000",
     methods: ["GET", "POST"],
     credentials: true,
   };
