@@ -6,18 +6,19 @@ const socketIo = require("socket.io");
 const messageRoutes = require("./routes/messages");
 const usersRoutes = require("./routes/users");
 const httpProxy = require('http-proxy');
+const allowedOrigins = ['http://localhost:3001', 'http://localhost:3000'];
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "http://127.0.0.1:3000",
     methods: ["GET", "POST"],
     credentials: true,
   },
 });
 
-app.use(cors());
+app.use(cors({ origin: allowedOrigins }));
+
 app.use(express.json());
 const proxy = httpProxy.createProxyServer();
 
@@ -34,7 +35,7 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/users", usersRoutes);
 
 app.get('/', (req, res) => {
-  res.set('Access-Control-Allow-Origin', 'http://localhost:3001');
+  res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
   res.send('Hello World!');
 });
 
@@ -78,6 +79,17 @@ io.on("connection", (socket) => {
   });
 });
 
+io.use((socket, next) => {
+  socket.handshake.headers.origin = "http://127.0.0.1:3000";
+  // update the corsOptions to include the origin
+  const corsOptions = {
+    origin: "http://127.0.0.1:3000",
+    methods: ["GET", "POST"],
+    credentials: true,
+  };
+  cors(corsOptions)(socket.request, socket.request.res, next);
+});
+
 // Use the cors middleware for Socket.IO
 // io.origins((origin, callback) => {
 //   if (origin !== "http://127.0.0.1:3001") {
@@ -86,4 +98,4 @@ io.on("connection", (socket) => {
 //   callback(null, true);
 // });
 
-server.listen(3000, () => console.log("Server started on port 3000"));
+server.listen(3001, () => console.log("Server started on port 3001"));

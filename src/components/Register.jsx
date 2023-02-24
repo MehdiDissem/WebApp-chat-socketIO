@@ -25,7 +25,7 @@ function Register() {
     const {setUser}=useContext(Context)
 
     const handleSubmit=()=>{
-        axios.post("http://127.0.0.1:3000/api/users/register/",{
+        axios.post("http://127.0.0.1:3001/api/users/register/",{
             username:username,
             email:email,
             password:password,

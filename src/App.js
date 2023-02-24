@@ -13,7 +13,7 @@ function App() {
   const [user,setUser]=useState([])
 
   useEffect(()=>{
-    axios.get("http://127.0.0.1:3000/api/users/all").then(res=> setUsers(res.data)).catch(err=>console.log(err))
+    axios.get("http://127.0.0.1:3001/api/users/all").then(res=> setUsers(res.data)).catch(err=>console.log(err))
   },[])
 
   return (
